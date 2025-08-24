@@ -95,6 +95,7 @@ C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\BasarSoft.csproj
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\BasarSoft.MvcApplicationPartsAssemblyInfo.cs
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\BasarSoft.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\EFCoreNpgsqlNetTopologySuite.cs
+C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\BasarSoft.sourcelink.json
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\rjimswa.dswa.cache.json
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
@@ -103,10 +104,12 @@ C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\staticwebassets.
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\BasarSoft.csproj.Up2Date
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\BasarSoft.dll
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\refint\BasarSoft.dll
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\BasarSoft.pdb
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\BasarSoft.genruntimeconfig.cache
 C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\ref\BasarSoft.dll
-C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\BasarSoft.SharedResources.resources
+C:\Users\ASUS\source\repos\BasarSoft\BasarSoft\obj\Debug\net8.0\BasarSoft.csproj.GenerateResource.cache

@@ -1,187 +1,141 @@
-﻿using BasarSoft.Data;
+﻿// Services/GeometryEfService.cs
+using NetTopologySuite;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.IO;
+
 using BasarSoft.Dtos;
 using BasarSoft.Entity;
 using BasarSoft.Responses;
 using BasarSoft.Services.Interfaces;
+using BasarSoft.Repositories.Interfaces;
+using BasarSoft.UnitOfWork;
 using BasarSoft.Validation;
-using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
-
-// NTS
-using NetTopologySuite;
-using NetTopologySuite.Geometries;
-using NetTopologySuite.Geometries.Implementation;   // for CoordinateArraySequenceFactory
-using NetTopologySuite.IO;
-
-namespace BasarSoft.Services;
 
 public sealed class GeometryEfService : IGeometryService
 {
-    public BasarSoftDbContext db { get; set; }
+    private readonly IRepository<GeometryItem> repo;
+    private readonly IUnitOfWork uow;
+    static readonly NtsGeometryServices nts = NtsGeometryServices.Instance;
+    static readonly WKTWriter wktWriter = new();
 
-    public static readonly Regex namePattern = new(@"^[A-Za-z0-9 _\-]{3,50}$");
-
-    // 1=POINT, 2=LINESTRING, 3=POLYGON
-    public static readonly Dictionary<int, string> GeometryTypeMap = new()
+    public GeometryEfService(IRepository<GeometryItem> repo, IUnitOfWork uow)
     {
-        { 1, "POINT" },
-        { 2, "LINESTRING" },
-        { 3, "POLYGON" }
-    };
-
-    // --- NTS setup (SRID=4326) ---
-    static readonly NtsGeometryServices Nts = new NtsGeometryServices(
-        CoordinateArraySequenceFactory.Instance,
-        new PrecisionModel(),
-        4326);
-    static readonly GeometryFactory Gf = Nts.CreateGeometryFactory(4326);
-    static readonly WKTReader WktReader = new WKTReader(Nts);
-
-    public GeometryEfService(BasarSoftDbContext dbContext)
-    {
-        db = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+        this.repo = repo;
+        this.uow = uow;
     }
 
-    // Parse WKT to NTS Geometry with validation (topology checks are here)
-    private static Geometry ParseGeometryStrict(int type, string wkt)
-    {
-        Geometry g;
-        try { g = WktReader.Read(wkt); }
-        catch (Exception ex)
-        {
-            throw new ArgumentException($"Geçersiz WKT: {ex.Message}");
-        }
-
-        if (!g.IsValid)
-            throw new ArgumentException("Geometri hatalı (IsValid=false).");
-
-        if (g is LineString ls && ls.NumPoints < 2)
-            throw new ArgumentException("LineString en az 2 nokta içermeli.");
-
-        if (g is Polygon poly && !poly.Shell.IsClosed)
-            throw new ArgumentException("Polygon kapanmıyor (ilk/son nokta aynı değil).");
-
-        if (g.SRID != 4326) g.SRID = 4326;
-
-        return g;
-    }
-
-    // =========================
-    // READ (async)
-    // =========================
     public async Task<ApiResponse<List<GeometryItem>>> GetAllAsync()
     {
-        var items = await db.Points.AsNoTracking().ToListAsync();
-        foreach (var it in items) it.Shape = null!;
-        return ApiResponse<List<GeometryItem>>.Ok(items, "Listed");
+        var list = await repo.GetAllAsync();
+        foreach (var x in list) x.Wkt = x.Geo is null ? "" : wktWriter.Write(x.Geo);
+        return ApiResponse<List<GeometryItem>>.OkKey(list, "success.listed");
     }
 
     public async Task<ApiResponse<GeometryItem>> GetByIdAsync(int id)
     {
-        var item = await db.Points.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
-        if (item is null) return ApiResponse<GeometryItem>.Fail("Not found");
-
-        item.Shape = null!;
-        return ApiResponse<GeometryItem>.Ok(item, "Found");
+        var item = await repo.GetByIdAsync(id);
+        if (item is null) return ApiResponse<GeometryItem>.NotFoundKey("error.notfound");
+        item.Wkt = item.Geo is null ? "" : wktWriter.Write(item.Geo);
+        return ApiResponse<GeometryItem>.OkKey(item, "success.ok");
     }
 
-    // =========================
-    // WRITE (async)
-    // =========================
     public async Task<ApiResponse<GeometryItem>> CreateAsync(GeometryDto dto)
     {
-        var norm = GeometryValidator.NormalizeAndValidate(dto); // header + commas
-        if (!norm.Success)
-            return ApiResponse<GeometryItem>.Fail(norm.Message ?? "Invalid input");
+        var vr = GeometryValidator.NormalizeAndValidate(dto);
+        if (!vr.Success) return ApiResponse<GeometryItem>.FailKey("error.validation");
 
-        dto.WKT = norm.Wkt!;
-
-        Geometry geom;
-        try { geom = ParseGeometryStrict(dto.Type, dto.WKT); }
-        catch (Exception ex) { return ApiResponse<GeometryItem>.Fail(ex.Message); }
+        var geomRes = ParseGeometry(vr.Wkt!);
+        if (!geomRes.Success) return ApiResponse<GeometryItem>.FailKey("error.geometry.invalid");
 
         var entity = new GeometryItem
         {
             Name = dto.Name,
             Type = dto.Type,
-            WKT = dto.WKT,
-            Shape = geom
+            Geo = geomRes.Data!,
+            Wkt = vr.Wkt!
         };
 
-        await db.Points.AddAsync(entity);
-        await db.SaveChangesAsync();
+        await repo.AddAsync(entity);
+        await uow.CompleteAsync();
 
-        entity.Shape = null!;
-        return ApiResponse<GeometryItem>.Ok(entity, "Created");
+        entity.Wkt = wktWriter.Write(entity.Geo);
+        return ApiResponse<GeometryItem>.CreatedKey(entity, "success.created");
     }
 
     public async Task<ApiResponse<GeometryItem>> UpdateAsync(int id, GeometryDto dto)
     {
-        var norm = GeometryValidator.NormalizeAndValidate(dto);
-        if (!norm.Success)
-            return ApiResponse<GeometryItem>.Fail(norm.Message ?? "Invalid input");
+        var entity = await repo.GetByIdAsync(id);
+        if (entity is null) return ApiResponse<GeometryItem>.NotFoundKey("error.notfound");
 
-        dto.WKT = norm.Wkt!;
+        var vr = GeometryValidator.NormalizeAndValidate(dto);
+        if (!vr.Success) return ApiResponse<GeometryItem>.FailKey("error.validation");
 
-        var entity = await db.Points.FirstOrDefaultAsync(p => p.Id == id);
-        if (entity is null)
-            return ApiResponse<GeometryItem>.Fail("Not found");
-
-        Geometry geom;
-        try { geom = ParseGeometryStrict(dto.Type, dto.WKT); }
-        catch (Exception ex) { return ApiResponse<GeometryItem>.Fail(ex.Message); }
+        var geomRes = ParseGeometry(vr.Wkt!);
+        if (!geomRes.Success) return ApiResponse<GeometryItem>.FailKey("error.geometry.invalid");
 
         entity.Name = dto.Name;
         entity.Type = dto.Type;
-        entity.WKT = dto.WKT;
-        entity.Shape = geom;
+        entity.Geo = geomRes.Data!;
+        entity.Wkt = vr.Wkt!;
 
-        await db.SaveChangesAsync();
+        repo.Update(entity);
+        await uow.CompleteAsync();
 
-        entity.Shape = null!;
-        return ApiResponse<GeometryItem>.Ok(entity, "Updated");
+        entity.Wkt = wktWriter.Write(entity.Geo);
+        return ApiResponse<GeometryItem>.OkKey(entity, "success.updated");
     }
 
     public async Task<ApiResponse<bool>> DeleteAsync(int id)
     {
-        var entity = await db.Points.FirstOrDefaultAsync(p => p.Id == id);
-        if (entity is null)
-            return ApiResponse<bool>.Fail("Not found");
+        var entity = await repo.GetByIdAsync(id);
+        if (entity is null) return ApiResponse<bool>.NotFoundKey("error.notfound");
 
-        db.Points.Remove(entity);
-        await db.SaveChangesAsync();
-        return ApiResponse<bool>.Ok(true, "Deleted");
+        repo.Remove(entity);
+        await uow.CompleteAsync();
+        return ApiResponse<bool>.OkKey(true, "success.deleted");
     }
 
     public async Task<ApiResponse<List<GeometryItem>>> AddRangeAsync(List<GeometryDto> items)
     {
-        var toAdd = new List<GeometryItem>();
+        var list = new List<GeometryItem>(items.Count);
 
         foreach (var dto in items)
         {
-            var v = GeometryValidator.NormalizeAndValidate(dto);
-            if (!v.Success)
-                return ApiResponse<List<GeometryItem>>.Fail(v.Message ?? "Invalid");
+            var vr = GeometryValidator.NormalizeAndValidate(dto);
+            if (!vr.Success) return ApiResponse<List<GeometryItem>>.FailKey("error.validation");
 
-            dto.WKT = v.Wkt!;
+            var geomRes = ParseGeometry(vr.Wkt!);
+            if (!geomRes.Success) return ApiResponse<List<GeometryItem>>.FailKey("error.geometry.invalid");
 
-            Geometry geom;
-            try { geom = ParseGeometryStrict(dto.Type, dto.WKT); }
-            catch (Exception ex) { return ApiResponse<List<GeometryItem>>.Fail(ex.Message); }
-
-            toAdd.Add(new GeometryItem
+            list.Add(new GeometryItem
             {
                 Name = dto.Name,
                 Type = dto.Type,
-                WKT = dto.WKT,
-                Shape = geom
+                Geo = geomRes.Data!,
+                Wkt = vr.Wkt!
             });
         }
 
-        await db.Points.AddRangeAsync(toAdd);
-        await db.SaveChangesAsync();
+        await repo.AddRangeAsync(list);
+        await uow.CompleteAsync();
 
-        foreach (var it in toAdd) it.Shape = null!;
-        return ApiResponse<List<GeometryItem>>.Ok(toAdd, "Batch added");
+        foreach (var x in list) x.Wkt = wktWriter.Write(x.Geo);
+        return ApiResponse<List<GeometryItem>>.OkKey(list, "success.inserted");
+    }
+
+    private static ApiResponse<Geometry> ParseGeometry(string wkt)
+    {
+        try
+        {
+            var reader = new WKTReader(nts);
+            var geom = reader.Read(wkt);
+            if (geom == null) return ApiResponse<Geometry>.FailKey("error.geometry.parse");
+            if (geom.SRID != 4326) geom.SRID = 4326;
+            return ApiResponse<Geometry>.OkKey(geom, "success.ok");
+        }
+        catch
+        {
+            return ApiResponse<Geometry>.FailKey("error.geometry.exception");
+        }
     }
 }

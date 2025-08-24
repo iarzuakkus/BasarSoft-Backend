@@ -1,4 +1,5 @@
 ﻿using NetTopologySuite.Geometries;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace BasarSoft.Entity
@@ -6,16 +7,14 @@ namespace BasarSoft.Entity
     public sealed class GeometryItem
     {
         public int Id { get; set; }
-
-        public string Name { get; set; } = "";
-
-        // 1=POINT, 2=LINESTRING, 3=POLYGON (map dictionary servis içinde tutulacak)
+        public string Name { get; set; } = string.Empty;
         public int Type { get; set; }
 
-        // WKT metin temsili (ör: "POINT (30 10)")
-        public string WKT { get; set; } = "";
-
+        [Column("wkt", TypeName = "geometry")]
         [JsonIgnore]
-        public Geometry Shape { get; set; } = null!;
+        public Geometry Geo { get; set; } = null!;
+
+        [NotMapped]
+        public string Wkt { get; set; } = string.Empty;
     }
 }

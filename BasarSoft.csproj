@@ -1,33 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+
+		<!-- Varsayılan otomatik .resx eklemeyi kapat -->
+		<EnableDefaultEmbeddedResourceItems>false</EnableDefaultEmbeddedResourceItems>
 	</PropertyGroup>
 
+	<!-- SharedResources.resx'i TAM BASE NAME ile göm -->
 	<ItemGroup>
-		<!-- EF Core runtime + tooling -->
+		<EmbeddedResource Include="Resources\SharedResources.resx">
+			<LogicalName>BasarSoft.Resources.SharedResources.resources</LogicalName>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.5">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-
-		<!-- Npgsql sürücü (veritabanı bağlantısı) -->
 		<PackageReference Include="Npgsql" Version="8.0.3" />
-
-		<!-- EF Core için PostgreSQL provider -->
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
-
-		<!-- NetTopologySuite (geometri tipleri) -->
 		<PackageReference Include="NetTopologySuite" Version="2.5.0" />
-
-		<!-- EFCore PostgreSQL + NTS entegrasyonu -->
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="8.0.4" />
-
-		<!-- Swagger -->
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
 	</ItemGroup>
-
 </Project>

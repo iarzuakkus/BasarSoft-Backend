@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>2.0</value>
+	</resheader>
+	<resheader name="reader">
+		<value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+	<resheader name="writer">
+		<value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+	</resheader>
+
+	<data name="success.ok" xml:space="preserve">
+    <value>Success</value>
+  </data>
+	<data name="success.listed" xml:space="preserve">
+    <value>Listed successfully.</value>
+  </data>
+	<data name="success.created" xml:space="preserve">
+    <value>Created successfully.</value>
+  </data>
+	<data name="success.updated" xml:space="preserve">
+    <value>Updated successfully.</value>
+  </data>
+	<data name="success.deleted" xml:space="preserve">
+    <value>Deleted successfully.</value>
+  </data>
+	<data name="success.inserted" xml:space="preserve">
+    <value>Inserted successfully.</value>
+  </data>
+	<data name="success.nocontent" xml:space="preserve">
+    <value>No content.</value>
+  </data>
+
+	<data name="error.notfound" xml:space="preserve">
+    <value>Entity not found.</value>
+  </data>
+	<data name="error.validation" xml:space="preserve">
+    <value>Validation error.</value>
+  </data>
+	<data name="error.geometry.parse" xml:space="preserve">
+    <value>Geometry parse failed.</value>
+  </data>
+	<data name="error.geometry.invalid" xml:space="preserve">
+    <value>Invalid geometry.</value>
+  </data>
+	<data name="error.geometry.exception" xml:space="preserve">
+    <value>Geometry error: {0}</value>
+  </data>
+	<data name="error.conflict" xml:space="preserve">
+    <value>Database conflict (duplicate entry).</value>
+  </data>
+	<data name="error.unexpected" xml:space="preserve">
+    <value>Unexpected error occurred.</value>
+  </data>
+	<data name="error.bulk.validation" xml:space="preserve">
+    <value>Validation error in record '{0}': {1}</value>
+  </data>
+	<data name="error.bulk.geometry" xml:space="preserve">
+    <value>Geometry error in record '{0}': {1}</value>
+  </data>
+</root>

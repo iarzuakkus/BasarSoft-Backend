@@ -1,16 +1,26 @@
 [
   {
-    "ContainingType": "GeometryController",
+    "ContainingType": "BasarSoft.Controllers.GeometryController",
     "Method": "GetAll",
     "RelativePath": "api/Geometry",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "BasarSoft.Responses.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[BasarSoft.Entity.GeometryItem, BasarSoft, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "GeometryController",
+    "ContainingType": "BasarSoft.Controllers.GeometryController",
     "Method": "Create",
     "RelativePath": "api/Geometry",
     "HttpMethod": "POST",
@@ -23,10 +33,20 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "BasarSoft.Responses.ApiResponse\u00601[[BasarSoft.Entity.GeometryItem, BasarSoft, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "GeometryController",
+    "ContainingType": "BasarSoft.Controllers.GeometryController",
     "Method": "GetById",
     "RelativePath": "api/Geometry/{id}",
     "HttpMethod": "GET",
@@ -39,10 +59,20 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "BasarSoft.Responses.ApiResponse\u00601[[BasarSoft.Entity.GeometryItem, BasarSoft, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "GeometryController",
+    "ContainingType": "BasarSoft.Controllers.GeometryController",
     "Method": "Update",
     "RelativePath": "api/Geometry/{id}",
     "HttpMethod": "PUT",
@@ -60,10 +90,20 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "BasarSoft.Responses.ApiResponse\u00601[[BasarSoft.Entity.GeometryItem, BasarSoft, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "GeometryController",
+    "ContainingType": "BasarSoft.Controllers.GeometryController",
     "Method": "Delete",
     "RelativePath": "api/Geometry/{id}",
     "HttpMethod": "DELETE",
@@ -76,10 +116,20 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "BasarSoft.Responses.ApiResponse\u00601[[System.Boolean, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
-    "ContainingType": "GeometryController",
+    "ContainingType": "BasarSoft.Controllers.GeometryController",
     "Method": "AddRange",
     "RelativePath": "api/Geometry/batch",
     "HttpMethod": "POST",
@@ -92,6 +142,16 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "BasarSoft.Responses.ApiResponse\u00601[[System.Collections.Generic.List\u00601[[BasarSoft.Entity.GeometryItem, BasarSoft, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   }
 ]
