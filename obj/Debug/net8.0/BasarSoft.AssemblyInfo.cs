@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BasarSoft")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c8b4e1fbb8921e828bbaeb16edc9885af11b8809")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f42c287c2b5859ad0f36a5975cbf62c74fdb391b")]
 [assembly: System.Reflection.AssemblyProductAttribute("BasarSoft")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BasarSoft")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
