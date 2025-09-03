@@ -131,6 +131,39 @@ namespace BasarSoft.Services
             return Task.FromResult(ApiResponse<List<GeometryItem>>.Ok(added, "Batch added"));
         }
 
+        // 
+        public Task<ApiResponse<PaginationResponse<GeometryItem>>> GetPagedAsync(PaginationRequest request)
+        {
+            List<GeometryItem> snapshot;
+            lock (gate) snapshot = store.Select(Clone).ToList();
+
+            if (!string.IsNullOrWhiteSpace(request.Search))
+            {
+                snapshot = snapshot
+                    .Where(x => x.Name.Contains(request.Search, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            var totalCount = snapshot.Count;
+            var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
+
+            var items = snapshot
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToList();
+
+            var response = new PaginationResponse<GeometryItem>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                TotalPages = totalPages,
+                Page = request.Page,
+                PageSize = request.PageSize
+            };
+
+            return Task.FromResult(ApiResponse<PaginationResponse<GeometryItem>>.Ok(response, "Listed"));
+        }
+
         private static GeometryItem Clone(GeometryItem x) => new()
         {
             Id = x.Id,

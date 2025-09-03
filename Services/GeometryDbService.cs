@@ -182,5 +182,64 @@ namespace BasarSoft.Services
                 return ApiResponse<List<GeometryItem>>.Fail(ex.Message, 400);
             }
         }
+
+        // 
+        public async Task<ApiResponse<PaginationResponse<GeometryItem>>> GetPagedAsync(PaginationRequest request)
+        {
+            var list = new List<GeometryItem>();
+            await using var conn = await dataSource.OpenConnectionAsync();
+
+            // Dinamik filtre
+            var where = "";
+            if (!string.IsNullOrWhiteSpace(request.Search))
+                where = "WHERE lower(name) LIKE lower(@search)";
+
+            // Toplam kayıt sayısı
+            var countSql = $"SELECT COUNT(*) FROM points {where};";
+            await using (var countCmd = new NpgsqlCommand(countSql, conn))
+            {
+                if (!string.IsNullOrWhiteSpace(request.Search))
+                    countCmd.Parameters.AddWithValue("@search", $"%{request.Search.Trim()}%");
+                var totalCount = Convert.ToInt32(await countCmd.ExecuteScalarAsync());
+
+                var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
+
+                // Sayfa verisi
+                var dataSql = $@"
+                    SELECT id, name, ST_AsText(wkt) AS wkt
+                    FROM points
+                    {where}
+                    ORDER BY id
+                    OFFSET @offset LIMIT @limit;";
+
+                await using var dataCmd = new NpgsqlCommand(dataSql, conn);
+                if (!string.IsNullOrWhiteSpace(request.Search))
+                    dataCmd.Parameters.AddWithValue("@search", $"%{request.Search.Trim()}%");
+                dataCmd.Parameters.AddWithValue("@offset", (request.Page - 1) * request.PageSize);
+                dataCmd.Parameters.AddWithValue("@limit", request.PageSize);
+
+                await using var r = await dataCmd.ExecuteReaderAsync();
+                while (await r.ReadAsync())
+                {
+                    list.Add(new GeometryItem
+                    {
+                        Id = r.GetInt32(0),
+                        Name = r.GetString(1),
+                        Wkt = r.GetString(2)
+                    });
+                }
+
+                var response = new PaginationResponse<GeometryItem>
+                {
+                    Items = list,
+                    TotalCount = totalCount,
+                    TotalPages = totalPages,
+                    Page = request.Page,
+                    PageSize = request.PageSize
+                };
+
+                return ApiResponse<PaginationResponse<GeometryItem>>.Ok(response, "Listed");
+            }
+        }
     }
 }

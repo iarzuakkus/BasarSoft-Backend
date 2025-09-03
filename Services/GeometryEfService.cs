@@ -1,5 +1,4 @@
-﻿// Services/GeometryEfService.cs
-using NetTopologySuite;
+﻿using NetTopologySuite;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 
@@ -121,6 +120,42 @@ public sealed class GeometryEfService : IGeometryService
 
         foreach (var x in list) x.Wkt = wktWriter.Write(x.Geo);
         return ApiResponse<List<GeometryItem>>.OkKey(list, "success.inserted");
+    }
+
+    // ✅ Yeni metod: pagination + search
+    public async Task<ApiResponse<PaginationResponse<GeometryItem>>> GetPagedAsync(PaginationRequest request)
+    {
+        var all = await repo.GetAllAsync();
+
+        // Optional search filter
+        if (!string.IsNullOrWhiteSpace(request.Search))
+        {
+            all = all
+                .Where(x => x.Name.Contains(request.Search, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        var totalCount = all.Count;
+        var totalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize);
+
+        var items = all
+            .Skip((request.Page - 1) * request.PageSize)
+            .Take(request.PageSize)
+            .ToList();
+
+        foreach (var x in items)
+            x.Wkt = x.Geo is null ? "" : wktWriter.Write(x.Geo);
+
+        var response = new PaginationResponse<GeometryItem>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            TotalPages = totalPages,
+            Page = request.Page,
+            PageSize = request.PageSize
+        };
+
+        return ApiResponse<PaginationResponse<GeometryItem>>.OkKey(response, "success.listed");
     }
 
     private static ApiResponse<Geometry> ParseGeometry(string wkt)

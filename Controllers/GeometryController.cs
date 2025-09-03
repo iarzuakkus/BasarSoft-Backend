@@ -36,5 +36,10 @@ namespace BasarSoft.Controllers
         [HttpPost("batch")]
         public Task<ApiResponse<List<GeometryItem>>> AddRange([FromBody] List<GeometryDto> items)
             => service.AddRangeAsync(items);
+
+        // 
+        [HttpGet("paged")]
+        public Task<ApiResponse<PaginationResponse<GeometryItem>>> GetPaged([FromQuery] PaginationRequest request)
+            => service.GetPagedAsync(request);
     }
 }

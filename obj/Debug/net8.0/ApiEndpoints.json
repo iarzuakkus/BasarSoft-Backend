@@ -153,5 +153,41 @@
         "StatusCode": 200
       }
     ]
+  },
+  {
+    "ContainingType": "BasarSoft.Controllers.GeometryController",
+    "Method": "GetPaged",
+    "RelativePath": "api/Geometry/paged",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Page",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "PageSize",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "Search",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "BasarSoft.Responses.ApiResponse\u00601[[BasarSoft.Dtos.PaginationResponse\u00601[[BasarSoft.Entity.GeometryItem, BasarSoft, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]], BasarSoft, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   }
 ]

@@ -12,5 +12,6 @@ namespace BasarSoft.Services.Interfaces
         Task<ApiResponse<GeometryItem>> UpdateAsync(int id, GeometryDto dto);
         Task<ApiResponse<bool>> DeleteAsync(int id);
         Task<ApiResponse<List<GeometryItem>>> AddRangeAsync(List<GeometryDto> items);
+        Task<ApiResponse<PaginationResponse<GeometryItem>>> GetPagedAsync(PaginationRequest request);
     }
 }
